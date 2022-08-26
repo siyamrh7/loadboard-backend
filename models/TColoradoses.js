@@ -15,7 +15,7 @@ const TruckListSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 
-const TIllinoises = mongoose.model("TIllinoises", TruckListSchema)
+const TColoradoses = mongoose.model("TColoradoses", TruckListSchema)
 
 
-module.exports = TIllinoises
+module.exports = TColoradoses

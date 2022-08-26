@@ -19,6 +19,8 @@ const Midwestes = require("../models/Midwestes");
 const Calendars = require("../models/Calendars");
 const Logics = require("../models/Logics");
 const Actionlogs = require("../models/Actionlogs");
+const TColoradoses = require("../models/TColoradoses");
+const TTrailers = require("../models/TTrailers");
 
 
 
@@ -36,15 +38,15 @@ function SocketRouter(io) {
         }
         const check2 = await Illinoises.findOne({ trailer })
         if (check2) {
-            return { status: false, msg: "This Trailer already exist on Illinois" }
+            return data={ status: false, msg: "This Trailer already exist on Illinois" }
         }
         const check3 = await Coloradoses.findOne({ trailer })
         if (check3) {
-            return { status: false, msg: "This Trailer already exist on Colorado" }
+            return data={ status: false, msg: "This Trailer already exist on Colorado" }
         }
         const check4 = await Midwestes.findOne({ trailer })
         if (check4) {
-            return { status: false, msg: "This Trailer already exist on Midwest" }
+            return data={ status: false, msg: "This Trailer already exist on Midwest" }
         }
         return false
      }
@@ -208,13 +210,13 @@ function SocketRouter(io) {
             }
             const checked= await checkTrailer(req.body.trailer)
             if(checked){return res.json(checked)}
-            const count = await Trailers.countDocuments({})
-            const logic = await Logics.find({})
-            if (count >= logic[0].utahtrailer) {
-                if (!notes || !truck_num) {
-                    return res.json({ status: false, msg: "You have to assign a Truck and Notes" })
-                }
-            }
+            // const count = await Trailers.countDocuments({})
+            // const logic = await Logics.find({})
+            // if (count >= logic[0].utahtrailer) {
+            //     if (!notes || !truck_num) {
+            //         return res.json({ status: false, msg: "You have to assign a Truck and Notes" })
+            //     }
+            // }
             const Trailer = await Trailers.create({
                 trailer, empty, vendor: vendor, truck_num, notes, user: req.id
             })
@@ -657,14 +659,14 @@ function SocketRouter(io) {
             if(!trailer ){return res.json({status:false,msg:"Invalid Creadentials"})}
             const checked= await checkTrailer(req.body.trailer)
             if(checked){return res.json(checked)}       
-            const count = await Illinoises.countDocuments({})
-            const logic = await Logics.find({})
-            if (count >= logic[0].illinois) {
-                if (!truck_num ||  !notes) {
-                    return res.json({ status: false, msg: `Illinois reached maximum value ${logic[0].illinois},So You have to assign a Illinois Truck and Notes` })
-                }
+            // const count = await Illinoises.countDocuments({})
+            // const logic = await Logics.find({})
+            // if (count >= logic[0].illinois) {
+            //     if (!truck_num ||  !notes) {
+            //         return res.json({ status: false, msg: `Illinois reached maximum value ${logic[0].illinois},So You have to assign a Illinois Truck and Notes` })
+            //     }
 
-            }
+            // }
             var illinois = await Illinoises.create({ ...req.body })
             io.emit("NEW_ILLINOIS", illinois)
             const actionlog = await Actionlogs.create({ number: illinois.trailer, user: req.user.user, title: `Added Illinois Trailer` })
@@ -726,46 +728,7 @@ function SocketRouter(io) {
             res.json({ status: false, msg:error.message })
         }
     })
-    router.post('/tillinois', AuthenticateUser, async (req, res) => {
-        try {
-            const { truck_num } = req.body
-            const check = await TIllinoises.findOne({ truck_num })
-            if (check) {
-                return res.json({ status: false, msg: "This Illinois Truck already exist" })
-            }
-            var tillinois = await TIllinoises.create({ ...req.body })
-            io.emit("NEW_TILLINOIS", tillinois)
-            const actionlog = await Actionlogs.create({ number: tillinois.truck_num, user: req.user.user, title: `Added Illinois Truck` })
-            io.emit("NEW_NOTIFICATION", actionlog)
-            res.json({ status: true, msg: "Illinois Truck Added" })
-
-        } catch (error) {
-            res.json({ status: false, msg: error.message })
-        }
-    })
-    router.get('/tillinois', AuthenticateUser, async (req, res) => {
-        try {
-            const tillinoises = await TIllinoises.find({})
-            res.json({ status: true, msg: tillinoises })
-        } catch (error) {
-            res.json({ status: false, msg: error.message })
-        }
-    })
-    router.delete('/tillinois', AuthenticateUser, async (req, res) => {
-        try {
-            const { id } = req.query
-            const tillinois = await TIllinoises.findByIdAndDelete(id)
-            var obj = { tillinois: tillinois }
-            io.emit("DELETED_TILLINOIS", obj)
-            const actionlog = await Actionlogs.create({ number: tillinois.truck_num, user: req.user.user, title: `Deleted Illinois Truck` })
-            io.emit("NEW_NOTIFICATION", actionlog)
-            res.json({ msg: "Deleted Successfully", tillinois: tillinois })
-
-        } catch (error) {
-            res.json({ status: false, msg:error.message })
-        }
-    })
-
+   
 
     //Colorado Api's
     router.post('/colorado', AuthenticateUser, async (req, res) => {
@@ -779,13 +742,13 @@ function SocketRouter(io) {
 
             const checked= await checkTrailer(req.body.trailer)
             if(checked){return res.json(checked)}     
-            const count = await Coloradoses.countDocuments({})
-            const logic = await Logics.find({})
-            if (count >= logic[0].colorado) {
-                if (!notes || !truck_num) {
-                    return res.json({ status: false, msg: `Colorado reached maximum value ${logic[0].colorado},SO You have to assign a truck and notes` })
-                }
-            }
+            // const count = await Coloradoses.countDocuments({})
+            // const logic = await Logics.find({})
+            // if (count >= logic[0].colorado) {
+            //     if (!notes || !truck_num) {
+            //         return res.json({ status: false, msg: `Colorado reached maximum value ${logic[0].colorado},SO You have to assign a truck and notes` })
+            //     }
+            // }
             const Colorado = await Coloradoses.create({
                 trailer, empty, location, truck_num, notes, user: req.id
             })
@@ -1044,7 +1007,128 @@ function SocketRouter(io) {
 
         }
     })
+//Trailer Trucks
+router.post('/tillinois', AuthenticateUser, async (req, res) => {
+    try {
+        const { truck_num,notes } = req.body
+        const check = await TIllinoises.findOne({ truck_num })
+        if (check) {
+            return res.json({ status: false, msg: "This Illinois Truck already exist" })
+        }
+        var tillinois = await TIllinoises.create({ ...req.body })
+        io.emit("NEW_TILLINOIS", tillinois)
+        const actionlog = await Actionlogs.create({ number: tillinois.truck_num, user: req.user.user, title: `Added Illinois Truck` })
+        io.emit("NEW_NOTIFICATION", actionlog)
+        res.json({ status: true, msg: "Illinois Truck Added" })
 
+    } catch (error) {
+        res.json({ status: false, msg: error.message })
+    }
+})
+router.get('/tillinois', AuthenticateUser, async (req, res) => {
+    try {
+        const tillinoises = await TIllinoises.find({})
+        res.json({ status: true, msg: tillinoises })
+    } catch (error) {
+        res.json({ status: false, msg: error.message })
+    }
+})
+router.delete('/tillinois', AuthenticateUser, async (req, res) => {
+    try {
+        const { id } = req.query
+        const tillinois = await TIllinoises.findByIdAndDelete(id)
+        var obj = { tillinois: tillinois }
+        io.emit("DELETED_TILLINOIS", obj)
+        const actionlog = await Actionlogs.create({ number: tillinois.truck_num, user: req.user.user, title: `Deleted Illinois Truck` })
+        io.emit("NEW_NOTIFICATION", actionlog)
+        res.json({ msg: "Deleted Successfully", tillinois: tillinois })
+
+    } catch (error) {
+        res.json({ status: false, msg:error.message })
+    }
+})
+
+
+
+
+router.post('/tcolorado', AuthenticateUser, async (req, res) => {
+    try {
+        const { truck_num,notes } = req.body
+        const check = await TColoradoses.findOne({ truck_num })
+        if (check) {
+            return res.json({ status: false, msg: "This Colorado Truck already exist" })
+        }
+        var tillinois = await TColoradoses.create({ ...req.body })
+        io.emit("NEW_TCOLORADO", tillinois)
+        const actionlog = await Actionlogs.create({ number: tillinois.truck_num, user: req.user.user, title: `Added Colorado Truck` })
+        io.emit("NEW_NOTIFICATION", actionlog)
+        res.json({ status: true, msg: "Coloradoses Truck Added" })
+
+    } catch (error) {
+        res.json({ status: false, msg: error.message })
+    }
+})
+router.get('/tcoloradoses', AuthenticateUser, async (req, res) => {
+    try {
+        const tillinoises = await TColoradoses.find({})
+        res.json({ status: true, msg: tillinoises })
+    } catch (error) {
+        res.json({ status: false, msg: error.message })
+    }
+})
+router.delete('/tcolorado', AuthenticateUser, async (req, res) => {
+    try {
+        const { id } = req.query
+        const tillinois = await TColoradoses.findByIdAndDelete(id)
+        var obj = { tcolorado: tillinois }
+        io.emit("DELETED_TCOLORADO", obj)
+        const actionlog = await Actionlogs.create({ number: tillinois.truck_num, user: req.user.user, title: `Deleted Colorado Truck` })
+        io.emit("NEW_NOTIFICATION", actionlog)
+        res.json({ msg: "Deleted Successfully", tcolorado: tillinois })
+
+    } catch (error) {
+        res.json({ status: false, msg:error.message })
+    }
+})
+router.post('/ttrailer', AuthenticateUser, async (req, res) => {
+    try {
+        const { truck_num,notes } = req.body
+        const check = await TTrailers.findOne({ truck_num })
+        if (check) {
+            return res.json({ status: false, msg: "This Trailers Truck already exist" })
+        }
+        var tillinois = await TTrailers.create({ ...req.body })
+        io.emit("NEW_TTRAILER", tillinois)
+        const actionlog = await Actionlogs.create({ number: tillinois.truck_num, user: req.user.user, title: `Added Trailer Truck` })
+        io.emit("NEW_NOTIFICATION", actionlog)
+        res.json({ status: true, msg: "Trailers Truck Added" })
+
+    } catch (error) {
+        res.json({ status: false, msg: error.message })
+    }
+})
+router.get('/ttrailers', AuthenticateUser, async (req, res) => {
+    try {
+        const tillinoises = await TTrailers.find({})
+        res.json({ status: true, msg: tillinoises })
+    } catch (error) {
+        res.json({ status: false, msg: error.message })
+    }
+})
+router.delete('/ttrailer', AuthenticateUser, async (req, res) => {
+    try {
+        const { id } = req.query
+        const tillinois = await TTrailers.findByIdAndDelete(id)
+        var obj = { ttrailer: tillinois }
+        io.emit("DELETED_TTRAILER", obj)
+        const actionlog = await Actionlogs.create({ number: tillinois.truck_num, user: req.user.user, title: `Deleted Trailer Truck` })
+        io.emit("NEW_NOTIFICATION", actionlog)
+        res.json({ msg: "Deleted Successfully", ttrailer: tillinois })
+
+    } catch (error) {
+        res.json({ status: false, msg:error.message })
+    }
+})
     return router;
 }
 
