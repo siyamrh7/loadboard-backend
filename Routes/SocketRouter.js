@@ -210,13 +210,7 @@ function SocketRouter(io) {
             }
             const checked= await checkTrailer(req.body.trailer)
             if(checked){return res.json(checked)}
-            // const count = await Trailers.countDocuments({})
-            // const logic = await Logics.find({})
-            // if (count >= logic[0].utahtrailer) {
-            //     if (!notes || !truck_num) {
-            //         return res.json({ status: false, msg: "You have to assign a Truck and Notes" })
-            //     }
-            // }
+          
             const Trailer = await Trailers.create({
                 trailer, empty, vendor: vendor, truck_num, notes, user: req.id
             })
@@ -659,14 +653,7 @@ function SocketRouter(io) {
             if(!trailer ){return res.json({status:false,msg:"Invalid Creadentials"})}
             const checked= await checkTrailer(req.body.trailer)
             if(checked){return res.json(checked)}       
-            // const count = await Illinoises.countDocuments({})
-            // const logic = await Logics.find({})
-            // if (count >= logic[0].illinois) {
-            //     if (!truck_num ||  !notes) {
-            //         return res.json({ status: false, msg: `Illinois reached maximum value ${logic[0].illinois},So You have to assign a Illinois Truck and Notes` })
-            //     }
-
-            // }
+       
             var illinois = await Illinoises.create({ ...req.body })
             io.emit("NEW_ILLINOIS", illinois)
             const actionlog = await Actionlogs.create({ number: illinois.trailer, user: req.user.user, title: `Added Illinois Trailer` })
@@ -692,7 +679,7 @@ function SocketRouter(io) {
           const prevMidwest=await Illinoises.findById(id)
             const Midwest = await Illinoises.findByIdAndUpdate(id, { trailer, location, truck_num, notes, user: req.id }, { returnDocument: 'after' })
             var obj = { illinois: Midwest }
-            io.emit("EDITED_MIDWEST", obj)
+            io.emit("EDITED_ILLINOIS", obj)
             const data=difference({...Midwest},{...prevMidwest})
             if(data._doc.notes){
                 const actionlog = await Actionlogs.create({ number: Midwest.trailer, user: req.user.user, title: `Edited Illinois Notes from "${prevMidwest.notes}" to "${notes}" for Illinois Trailer` })
@@ -701,7 +688,7 @@ function SocketRouter(io) {
                 const actionlog = await Actionlogs.create({ number: Midwest.trailer, user: req.user.user, title: `Edited Illinois Truck from "${prevMidwest.truck_num}" to "${truck_num}" for Illinois Trailer` })
                 io.emit("NEW_NOTIFICATION", actionlog)
             }else if(data._doc.location){
-                const actionlog = await Actionlogs.create({ number: Midwest.trailer, user: req.user.user, title: `Edited Illinois Location from "${prevMidwest.location}" to "${location}" for Illinois Trailer` })
+                const actionlog = await Actionlogs.create({ number: Midwest.trailer, user: req.user.user, title: `Edited Illinois Location from "${prevMidwest.location.name}" to "${location.name}" for Illinois Trailer` })
                 io.emit("NEW_NOTIFICATION", actionlog)
             }else{
                 const actionlog = await Actionlogs.create({ number: Midwest.trailer, user: req.user.user, title: `Edited Illinois Trailer ` })
@@ -742,13 +729,7 @@ function SocketRouter(io) {
 
             const checked= await checkTrailer(req.body.trailer)
             if(checked){return res.json(checked)}     
-            // const count = await Coloradoses.countDocuments({})
-            // const logic = await Logics.find({})
-            // if (count >= logic[0].colorado) {
-            //     if (!notes || !truck_num) {
-            //         return res.json({ status: false, msg: `Colorado reached maximum value ${logic[0].colorado},SO You have to assign a truck and notes` })
-            //     }
-            // }
+        
             const Colorado = await Coloradoses.create({
                 trailer, empty, location, truck_num, notes, user: req.id
             })
@@ -802,7 +783,7 @@ function SocketRouter(io) {
                 const actionlog = await Actionlogs.create({ number: Colorado.trailer, user: req.user.user, title: `Edited Colorado  Notes from "${prevColorado.notes}" to "${notes}" for Colorado Trailer` })
                 io.emit("NEW_NOTIFICATION", actionlog)
             } else  if(data._doc.location){
-                const actionlog = await Actionlogs.create({ number: Colorado.trailer, user: req.user.user, title: `Edited Colorado  Location from "${prevColorado.location}" to "${location}" for Colorado Trailer` })
+                const actionlog = await Actionlogs.create({ number: Colorado.trailer, user: req.user.user, title: `Edited Colorado  Location from "${prevColorado.location.name}" to "${location.name}" for Colorado Trailer` })
                 io.emit("NEW_NOTIFICATION", actionlog)
             } else if(data._doc.truck_num){
                 const actionlog = await Actionlogs.create({ number: Colorado.trailer, user: req.user.user, title: `Edited Colorado Truck from "${prevColorado.truck_num}" to "${truck_num}" for Colorado Trailer` })
@@ -889,7 +870,7 @@ function SocketRouter(io) {
                 const actionlog = await Actionlogs.create({ number: Midwest.trailer, user: req.user.user, title: `Edited Midwest Truck from "${prevMidwest.truck_num}" to "${truck_num}" for Midwest Trailer` })
                 io.emit("NEW_NOTIFICATION", actionlog)
             }else if(data._doc.location){
-                const actionlog = await Actionlogs.create({ number: Midwest.trailer, user: req.user.user, title: `Edited Midwest Location from "${prevMidwest.location}" to "${location}" for Midwest Trailer` })
+                const actionlog = await Actionlogs.create({ number: Midwest.trailer, user: req.user.user, title: `Edited Midwest Location from "${prevMidwest.location.name}" to "${location.name}" for Midwest Trailer` })
                 io.emit("NEW_NOTIFICATION", actionlog)
             }else{
                 const actionlog = await Actionlogs.create({ number: Midwest.trailer, user: req.user.user, title: `Edited Midwest Trailer Number` })

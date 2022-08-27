@@ -11,8 +11,8 @@ const TrailerListSchema = new mongoose.Schema({
         
     },
     location: {
-        type:String,
-
+        type:mongoose.Schema.Types.Mixed,
+        required: true,
     },
     truck_num: {
         type: String,     

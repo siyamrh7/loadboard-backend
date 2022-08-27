@@ -3,8 +3,8 @@ const mongoose = require('mongoose')
 
 const TruckListSchema = new mongoose.Schema({
     location: {
-        type: String,
-        required: true
+        type:mongoose.Schema.Types.Mixed,
+        required: true,
     },
     trailer: {
         type: String,
